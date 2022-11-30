@@ -1,5 +1,5 @@
 {
-    "version": 5,
+    "version": 6,
     "builds": [{
       "src": "src/index.js",
       "use": "@now/node"
@@ -7,7 +7,7 @@
     "routes": [
       {
         "src": "src",
-        "dest": "index.js"
+        "dest": "src/index.js"
       }
     ]
   }
