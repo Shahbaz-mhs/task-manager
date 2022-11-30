@@ -1,12 +1,12 @@
 {
-    "version": 7,
+    "version": 8,
     "builds": [{
-      "src": "src/index.js",
+      "src": "./src/index.js",
       "use": "@now/node"
     }],
     "routes": [
       {
-        "src": "src/index.js",
+        "src": "/.*",
         "dest": "src/index.js"
       }
     ]
