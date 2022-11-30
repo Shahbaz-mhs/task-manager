@@ -1,12 +1,12 @@
 {
-    "version": 8,
+    "version": 9,
     "builds": [{
-      "src": "./src/index.js",
-      "use": "@now/node"
+      "src": "src/index.js",
+      "use": "@versel/node"
     }],
     "routes": [
       {
-        "src": "/.*",
+        "src": "/(.*)",
         "dest": "src/index.js"
       }
     ]
