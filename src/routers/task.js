@@ -32,8 +32,14 @@ router.get('/task', auth, async (req, res) => {
             }
         })
         
-        res.status(200).send(req.user.tasks)
-        //res.status(200).send(task)
+        res.render('task', {
+             task_list: req.user.tasks,
+             name: 'Shahbaz Khan',
+             profile_avatar: req.user.avatar
+         })
+        
+        //res.status(200).send(req.user.tasks) new updated
+        //res.status(200).send(task)  old one
     }catch(e){
         res.status(500).send(e)
     }
@@ -44,6 +50,16 @@ router.get('/task', auth, async (req, res) => {
     //     res.status(500).send(e)
     // })
 
+})
+
+router.get('/task/add', auth, (req, res) => {
+    res.render('addtask',{
+        profile_avatar: req.user.avatar
+    })
+})
+
+router.get('/task/edit', auth, (req, res) => {
+    res.render('edittask')
 })
 
 router.get('/task/:id', auth, async (req, res) => {
@@ -57,7 +73,12 @@ router.get('/task/:id', auth, async (req, res) => {
         if(!task) {
             return res.status(400).send()
         }
-        res.send(task)
+        //res.send(task)
+        res.render('edittask', {
+            task_data: task,
+            name: 'Shahbaz Khan',
+            profile_avatar: req.user.avatar
+        })
 
     }catch(e){
         res.status(500).send(e)
@@ -74,7 +95,41 @@ router.get('/task/:id', auth, async (req, res) => {
 })
 
 
+//FOR BROWSER CUSTOM UPDATE TASK
 
+router.post('/tasks/:id', auth,async(req, res) => {
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['description','completed']
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+
+    if(!isValidOperation){
+        return res.status(400).send({error: 'Invalid updates:'})
+    }
+
+    try{
+        const task = await Task.findOne({_id:req.params.id, owner:req.user._id})
+       // const task = await Task.findById(req.params.id)
+        
+
+        //const task = await Task.findByIdAndUpdate(req.params.id, req.body, {new : true, runValidators:true})
+
+        if(!task){
+            return res.status(404).send(task)
+        }
+
+        updates.forEach((update) => task[update] = req.body[update])
+        await task.save() 
+        //res.status(200).send(task)
+        //req.flash("success", "Your message");
+        res.redirect('/task')
+
+    }catch(e){
+        res.status(400).send(e)
+    }
+
+})
+
+//FOR POSTMAN UPDATE TASK
 router.patch('/tasks/:id', auth,async(req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['description','completed']
@@ -107,6 +162,36 @@ router.patch('/tasks/:id', auth,async(req, res) => {
 
 
 
+
+//VIEW TASK
+
+router.get('/view/:id', auth, async (req, res) => {
+    const _id = req.params.id
+
+    try{
+        //const task = await Task.findById(_id)
+        const task = await Task.findOne({ _id, owner: req.user._id})
+
+
+        if(!task) {
+            return res.status(400).send()
+        }
+        //res.send(task)
+        res.render('viewtask', {
+            task_data: task,
+            name: 'Shahbaz Khan',
+            profile_avatar: req.user.avatar
+        })
+
+    }catch(e){
+        res.status(500).send(e)
+    }
+
+})
+
+
+
+//DELETE FOR POSTMAN
 router.delete('/tasks/:id', auth,async (req, res) => {
     try{
         //const dltTask = await Task.findByIdAndDelete(req.params.id)
@@ -123,6 +208,29 @@ router.delete('/tasks/:id', auth,async (req, res) => {
     }
 })
 
+//DELETE TASK FOR BROWSER
+router.get('/delete/:id', auth,async (req, res) => {
+    try{
+        //const dltTask = await Task.findByIdAndDelete(req.params.id)
+        const dltTask = await Task.findOneAndDelete({_id:req.params.id, owner:req.user._id})
+        if(!dltTask){
+            return res.status(404).send({error : 'Invalid Id!'})
+        }
+
+        
+        //res.status(200).send("Deleted Successfully")
+        res.redirect('/task')
+        // res.render('task', {
+        //     task_data: task,
+        //     name: 'Shahbaz Khan'
+        // })
+
+    }catch (e){
+        res.status(400).send(e)
+    }
+})
+
+
 
 
 router.post('/tasks', auth, async (req, res) => {
@@ -134,7 +242,8 @@ router.post('/tasks', auth, async (req, res) => {
 
     try{
         await task.save()
-        res.status(200).send(task)
+        //res.status(200).send(task)
+        res.redirect('/task')
 
     }catch(e){
         res.status(400).send(e)
@@ -146,5 +255,8 @@ router.post('/tasks', auth, async (req, res) => {
     //     res.status(400).send(e)
     // })
 })
+
+
+
 
 module.exports = router
