@@ -26,11 +26,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 7,
         trim: true,
-        validate(value){
-            if(value.toLowerCase().includes('password')){
-                throw new Error('Password cannot contain "password" ')
-            }
-        }
+//         validate(value){
+//             if(value.toLowerCase().includes('password')){
+//                 throw new Error('Password cannot contain "password" ')
+//             }
+//         }
     },
     age: {
         type: Number,
