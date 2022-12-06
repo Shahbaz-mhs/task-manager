@@ -8,6 +8,7 @@ const auth = require('./middleware/auth')
 const multer = require('multer')
 const cookieParser = require('cookie-parser')
 const favicon = require('express-favicon');
+const helpers = require('handlebars-helpers')();
 
 
 const bodyParser=require("body-parser");
@@ -65,6 +66,58 @@ hbs.registerHelper('if_equal', function(a, b, opts) {
     } else {
         return opts.inverse(this)
     }
+});
+
+hbs.registerHelper("inc", function(value, options)
+{
+    return parseInt(value) + 1;
+});
+
+
+hbs.registerHelper('formatDate', function(dateString) {
+    return new hbs.SafeString(
+        moment(dateString).format("MMM D").toUpperCase()
+    );
+});
+
+hbs.registerHelper("prettifyDate", function(timestamp) {
+    var curr_date = timestamp.getDate();
+    var curr_month = timestamp.getMonth();
+    curr_month++;
+    var curr_year = timestamp.getFullYear();
+    var hours = (timestamp.getHours() + 11) % 12 + 1;
+    var min = timestamp.getMinutes();
+    result = curr_year + "/" + curr_month + "/" + curr_date + " T " + hours + ":" + min;
+    return result;
+});
+
+hbs.registerHelper('times', function(n, block) {
+    var accum = '';
+    for(var i = 1; i <= n; ++i)
+        accum += block.fn(i);
+    return accum;
+});
+
+hbs.registerHelper("incby2", function(value, lim)
+{
+    // if(value == 3){
+    //     return 4;
+    // }
+
+    // if(value == 2){
+    //     return parseInt(value);
+    // }else{
+        const temp = parseInt(value) * lim;
+        return temp - lim;
+        // if (value%2 == 0){
+        //     return parseInt(value) + 2;
+        // }
+		// else{
+        //     return parseInt(value) + 3;
+        // }
+        
+   // }
+    
 });
 
 

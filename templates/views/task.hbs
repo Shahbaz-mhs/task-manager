@@ -20,7 +20,19 @@
     <div class="col-12">
         <h1>Tasks List</h1>
         <hr>
-      <a class="btn btn-primary" href="/task/add">Add Task</a>
+        <div class="flex col-12 " style="">
+          <a class="btn btn-primary" href="/task/add">Add Task</a>
+          <div class=" float-end" style="float:right;">
+          <div class="input-group">
+          
+  <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon"  id="search-input"/>&nbsp;
+  <button type="button" class="btn btn-outline-primary" id="search-button">search</button>
+  
+</div>
+</div>
+
+        </div>
+      
       
       
      
@@ -37,13 +49,13 @@
         <tbody>
             
             {{#if task_list}}
-           
+            
             {{#each task_list }}
         <tr>
-            <th scope="col">{{@index}}</th>
+            <th scope="col">{{inc @index}}</th>
             <th scope="col">{{description}}</th>
             <th scope="col">{{#if_equal completed true}}Yes{{else}}No{{/if_equal}} </th>
-            <th scope="col">{{createdAt}}</th>
+            <th scope="col">{{prettifyDate createdAt }}</th>
             <td>
               <a href="/view/{{_id}}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
               <a href="/task/{{_id}}" class="btn btn-success"><i class="fa fa-pencil"></i></a>
@@ -73,9 +85,38 @@
           
         </tbody>
       </table>
+      <nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-end">
+    {{!-- <li class="page-item disabled">
+      <a class="page-link" href="/task?skip={{#if next}}{{prev}}{{else}}2{{/if}}" tabindex="-1">Previous</a>
+    </li> --}}
+    {{!-- <li class="page-item"><a class="page-link" href="/task?skip=0">1</a></li> --}}
+    
+    {{#times task_count }}
+    <li class="page-item"><a class="page-link" href="/task?skip={{incby2 this 4}}">{{this}}</a></li>
+    {{/times}}
+    {{!-- <li class="page-item"><a class="page-link" href="/task?skip=0">1</a></li>
+    <li class="page-item"><a class="page-link" href="/task?skip=2">2</a></li>
+    <li class="page-item"><a class="page-link" href="/task?skip=4">3</a></li> --}}
+    {{!-- {{#if_equal completed true}}Yes{{else}}No{{/if_equal}} --}}
+    {{!-- <li class="page-item {{#if_equal task_count 6  }} disabled {{/if_equal}}">
+      <a class="page-link" href="/task?skip={{#if next}}{{next}}{{else}}2{{/if}}">Next</a>
+    </li> --}}
+  </ul>
+</nav>
     </div>
   </div>
 </div>
+
+<script>
+  const searchButton = document.getElementById('search-button');
+const searchInput = document.getElementById('search-input');
+searchButton.addEventListener('click', () => {
+  const inputValue = searchInput.value;
+  window.location.replace("/task?description="+inputValue);
+  //alert(inputValue);
+});
+</script>
 
 </body>
 {{>footer}}

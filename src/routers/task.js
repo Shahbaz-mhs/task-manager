@@ -2,6 +2,7 @@ const express = require('express')
 const Task = require('../models/tasks')
 const router = new express.Router()
 const auth = require('../middleware/auth')
+const { count } = require('../models/tasks')
 
 //GET /task?completed=true
 //GET /task?limit=10&skip=20
@@ -13,6 +14,10 @@ router.get('/task', auth, async (req, res) => {
     if(req.query.completed){
         match.completed = req.query.completed === 'true'
     }
+
+    if(req.query.description){
+        match.description = req.query.description
+    }
     
     if(req.query.sortBy){
         const parts = req.query.sortBy.split(':')
@@ -20,22 +25,32 @@ router.get('/task', auth, async (req, res) => {
     }
 
     try{
-        //const task = await Task.find({owner: req.user._id})
+        const count_total_task = await Task.find({owner: req.user._id})
         //await req.user.populate('tasks').execPopulate()
         await req.user.populate({
             path: 'tasks',
             match,
             options: {
-                limit: parseInt(req.query.limit),
+                limit: 4,//parseInt(req.query.limit),
                 skip: parseInt(req.query.skip),
                 sort
             }
         })
+
+      
+        if(count_total_task.length%2 != 0){
+            count_task = (count_total_task.length + 1)/ 4
+        }else{
+            count_task = count_total_task.length / 4
+        }
         
         res.render('task', {
              task_list: req.user.tasks,
              name: 'Shahbaz Khan',
-             profile_avatar: req.user.avatar
+             profile_avatar: req.user.avatar,
+             //next : parseInt(req.query.skip) + 2,
+             //prev : parseInt(req.query.skip) - 2,
+             task_count : count_task
          })
         
         //res.status(200).send(req.user.tasks) new updated
