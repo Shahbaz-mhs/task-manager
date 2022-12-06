@@ -16,7 +16,10 @@ router.get('/task', auth, async (req, res) => {
     }
 
     if(req.query.description){
-        match.description = req.query.description
+        match.description = {'$regex': new RegExp(req.query.description) , $options: "?i" }
+       // match.description = {$caseSensitive: false}
+        
+        
     }
     
     if(req.query.sortBy){
